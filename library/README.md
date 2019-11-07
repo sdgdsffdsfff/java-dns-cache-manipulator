@@ -5,10 +5,10 @@ Java Dns Cache Manipulator(DCM) Library
 [![Windows Build Status](https://img.shields.io/appveyor/ci/oldratlee/java-dns-cache-manipulator/master.svg?label=windows%20build)](https://ci.appveyor.com/project/oldratlee/java-dns-cache-manipulator)
 [![Coverage Status](https://coveralls.io/repos/github/alibaba/java-dns-cache-manipulator/badge.svg?branch=master)](https://coveralls.io/github/alibaba/java-dns-cache-manipulator?branch=master)  
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.alibaba/dns-cache-manipulator/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.alibaba/dns-cache-manipulator/)
-[![GitHub release](https://img.shields.io/github/release/alibaba/java-dns-cache-manipulator.svg)](https://github.com/alibaba/java-dns-cache-manipulator/releases)
-[![Dependency Status](https://www.versioneye.com/user/projects/55eb1371a65c8c000e0449d3/badge.svg)](https://www.versioneye.com/user/projects/55eb1371a65c8c000e0449d3)  
+[![GitHub release](https://img.shields.io/github/release/alibaba/java-dns-cache-manipulator.svg)](https://github.com/alibaba/java-dns-cache-manipulator/releases)  
 [![Join the chat at https://gitter.im/alibaba/java-dns-cache-manipulator](https://badges.gitter.im/alibaba/java-dns-cache-manipulator.svg)](https://gitter.im/alibaba/java-dns-cache-manipulator?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![GitHub issues](https://img.shields.io/github/issues/alibaba/java-dns-cache-manipulator.svg)](https://github.com/alibaba/java-dns-cache-manipulator/issues)
+[![Average time to resolve an issue](http://isitmaintained.com/badge/resolution/alibaba/java-dns-cache-manipulator.svg)](http://isitmaintained.com/project/alibaba/java-dns-cache-manipulator "Average time to resolve an issue")
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 :point_right: 用编码的方式设置/查看`JVM`的`DNS`（实际上设置的是`DNS Cache`），支持`JDK 6+`，支持`IPv6`。
@@ -64,11 +64,11 @@ Java Dns Cache Manipulator(DCM) Library
     - 可以动态设置`DNS`缓存，无需修改`host`文件和`http`链接等不灵活的方式。
     - 一个`JVM`进程可以对应一套域名绑定，相互之间不影响，可以实现多场景，多域名绑定的需求压测。
 1. 打开`Java`中的`SecurityManager`时（如在`Web`容器`Tomcat`中的`Web`应用），`Java`的`DNS`缺省是不会失效的。
-    如果域名绑定的`IP`变了，可以通过这个库重置`DNS`，作为一个临时的手段（***强烈不推荐***）。
+    如果域名绑定的`IP`变了，可以通过这个库重置`DNS`。
     - 通过[`Java Dns Cache Manipulator Tool`](../tool)设置运行中`JVM DNS Cache`。  
-        **无需**应用包含了`Java Dns Cache Manipulator Library`依赖（即`Jar`）。
+        **无需** 应用包含了`Java Dns Cache Manipulator Library`依赖（即`Jar`）。
     - 或通过执行入口调用`Java Dns Cache Manipulator Library`的方法，比如远程调用或是[`jvm-ssh-groovy-shell`](https://github.com/palominolabs/jvm-ssh-groovy-shell)。  
-        ***需要***应用已经包含了`Java Dns Cache Manipulator Library`依赖（即`Jar`）。
+        ***需要*** 应用已经包含了`Java Dns Cache Manipulator Library`依赖（即`Jar`）。
 
 :busts_in_silhouette: User Guide
 =====================================
@@ -116,8 +116,15 @@ DnsCacheManipulator.setDnsCache(3600 * 1000, "www.hello-hell.com", "192.168.1.1"
 # 配置格式：
 # <host> = <ip>
 www.hello-world.com=192.168.1.1
-www.foo.com=192.168.1.2
+# 支持设置多个IP，用逗号分隔
+www.foo.com=192.168.1.2,192.168.1.3
+# 支持IPv6
+www.bar.com=1234:5678:0:0:0:0:0:200e
 ```
+
+> 注：  
+> `dns-cache.properties`是缺省文件名，可以通过`JVM`的`-D`选项`dcm.config.filename`修改使用的配置文件名，如  
+> `-Ddcm.config.filename=my-dns-cache.properties`。
 
 然后通过下面的一行代码完成批量设置：
 
@@ -228,21 +235,21 @@ content = m2.getResponseBodyAsString();
 :eyeglasses: 经过测试的`JDK`
 ==================================
 
-JDK | 系统 | On | 备注
---- | --- | --- | ----
-openjdk6 64-Bit | Linux | travis-ci |
-oraclejdk7 64-Bit | Linux | travis-ci |
-openjdk7 64-Bit | Linux | travis-ci |
-oraclejdk8 64-Bit | Linux | travis-ci |
-applejdk6 64-Bit | Mac | 个人Mac | jdk6由Apple[提供](https://java.com/zh_CN/download/faq/java_mac.xml)，[下载地址](https://support.apple.com/kb/DL1572?locale=zh_CN)。
-oraclejdk7 64-Bit | Mac | 个人Mac | 从jdk7开始，Mac jdk直接在`Oracle`下载。
-oraclejdk8 64-Bit | Mac | 个人Mac |
-oraclejdk6 64-Bit | windows server 2012 r2 | appveyor |
-oraclejdk6 32-Bit | windows server 2012 r2 | appveyor |
-oraclejdk7 64-Bit | windows server 2012 r2 | appveyor |
-oraclejdk7 32-Bit | windows server 2012 r2 | appveyor |
-oraclejdk8 64-Bit | windows server 2012 r2 | appveyor |
-oraclejdk8 32-Bit | windows server 2012 r2 | appveyor |
+JDK               | 系统                   | On        | 备注
+---               | ---                    | ---       | ----
+openjdk6 64-Bit   | Linux                  | travis-ci |
+oraclejdk7 64-Bit | Linux                  | travis-ci |
+openjdk7 64-Bit   | Linux                  | travis-ci |
+oraclejdk8 64-Bit | Linux                  | travis-ci |
+applejdk6 64-Bit  | Mac                    | 个人Mac   | jdk6由Apple[提供](https://java.com/zh_CN/download/faq/java_mac.xml)，[下载地址](https://support.apple.com/kb/DL1572?locale=zh_CN)。
+oraclejdk7 64-Bit | Mac                    | 个人Mac   | 从jdk7开始，Mac jdk直接在`Oracle`下载。
+oraclejdk8 64-Bit | Mac                    | 个人Mac   |
+oraclejdk6 64-Bit | windows server 2012 r2 | appveyor  |
+oraclejdk6 32-Bit | windows server 2012 r2 | appveyor  |
+oraclejdk7 64-Bit | windows server 2012 r2 | appveyor  |
+oraclejdk7 32-Bit | windows server 2012 r2 | appveyor  |
+oraclejdk8 64-Bit | windows server 2012 r2 | appveyor  |
+oraclejdk8 32-Bit | windows server 2012 r2 | appveyor  |
 
 PS：  
 感谢 [travis-ci](https://travis-ci.org/) 和 [appveyor](https://ci.appveyor.com) 免费提供了持续集成环境。
@@ -300,14 +307,14 @@ private static void cacheAddresses(String hostname,
     该项目的[使用文档](http://leopard.io/modules/javahost)。  
     本项目如何设置`Java DNS Cache`的解法来自该项目。刚开始在持续集成项目中碰到`host`绑定的问题时，也是使用该项目来解决的 :+1:
 - 类`InetAddress`的源代码：
-    - `JDK 6`的[`InetAddress`](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b27/java/net/InetAddress.java#InetAddress.CacheEntry)
-    - `JDK 7`的[`InetAddress`](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/7-b147/java/net/InetAddress.java#InetAddress.CacheEntry)
-    - `JDK 8`的[`InetAddress`](http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/8-b132/java/net/InetAddress.java#InetAddress.CacheEntry)
+    - `JDK 6`的[`InetAddress`](http://hg.openjdk.java.net/jdk6/jdk6/jdk/file/tip/src/share/classes/java/net/InetAddress.java#l739)
+    - `JDK 7`的[`InetAddress`](http://hg.openjdk.java.net/jdk7u/jdk7u/jdk/file/tip/src/share/classes/java/net/InetAddress.java#l742)
+    - `JDK 8`的[`InetAddress`](http://hg.openjdk.java.net/jdk8u/jdk8u/jdk/file/tip/src/share/classes/java/net/InetAddress.java#l748)
 - [`JVM Networking Properties` - `java docs`](http://docs.oracle.com/javase/8/docs/technotes/guides/net/properties.html)
-- [`java dns`解析缓存之源码解析](http://rongmayisheng.com/post/java-dns%E7%BC%93%E5%AD%98%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90)，写得很完整，源码解析。给出值得注意的结论：
+- [`java dns`解析缓存之源码解析](http://rongmayisheng.com/?p=1006)，写得很完整，源码解析。给出值得注意的结论：
     - 打开`Java`中的`SecurityManager`，`DNS`缓存将不会失效。
     - 否则，可访问的`DNS`解析缺省缓存30秒，不可访问的`DNS`解析缺省缓存10秒。
-- [关于`jvm dns cache`(域名缓存时间)](http://www.piao2010.com/%E5%85%B3%E4%BA%8Ejvm-dns-cache-%E5%9F%9F%E5%90%8D%E7%BC%93%E5%AD%98%E6%97%B6%E9%97%B4)，给出“对于多条A记录是采用什么策略返回`IP`”的结论：  
+- [关于`jvm dns cache`(域名缓存时间)](https://nigelzeng.iteye.com/blog/1704052)，给出“对于多条A记录是采用什么策略返回`IP`”的结论：
     - 在缓存有效期内，取到的`IP`永远是缓存中全部A记录的第一条，并没有轮循之类的策略。
     - 缓存失效之后重新进行DNS解析，因为每次域名解析返回的A记录顺序会发生变化(`dig www.google.com`测试可见)，所以缓存中的数据顺序也变了，取到的`IP`也变化。
 - [通过`JAVA`反射修改`JDK 1.6`当中`DNS`缓存内容](http://www.tuicool.com/articles/auYzui)，给出了设置`DNS`缓存在性能测试下使用的场景。
